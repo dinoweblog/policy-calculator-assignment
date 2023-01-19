@@ -10,7 +10,7 @@ export const Wrapper = ({ children }) => {
         margin: "auto",
         alignItems: "center",
         p: 10,
-        borderRadius: 10,
+        borderRadius: 5,
         mt: 10,
       }}
     >

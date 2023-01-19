@@ -6,12 +6,14 @@ import {
   FormControl,
   InputLabel,
   Box,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { API_LINK } from "../../api";
+import useValidate from "./hooks/useValidate";
 
 export const PolicyCalculator = () => {
+  const [successMgs, setSuccessMsg] = useState("");
   const [details, setDetails] = useState({
     DOB: "",
     gender: "",
@@ -22,12 +24,13 @@ export const PolicyCalculator = () => {
     PPT: "",
   });
 
-  const navigate = useNavigate();
+  const { validate, handleValidate } = useValidate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    console.log(name, value);
     setDetails({ ...details, [name]: value });
+    handleValidate(name, value);
+    setSuccessMsg("");
   };
 
   const handleSubmit = (event) => {
@@ -39,8 +42,19 @@ export const PolicyCalculator = () => {
         "Content-Type": "application/json",
       },
     })
-      .then(() => {
-        navigate("/illustration");
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        setSuccessMsg(res.message);
+        setDetails({
+          DOB: "",
+          gender: "",
+          sumAssured: "",
+          modelPremium: "",
+          premiumFrequency: "",
+          PT: "",
+          PPT: "",
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -55,9 +69,10 @@ export const PolicyCalculator = () => {
         margin: "auto",
         p: 10,
         mt: 5,
-        borderRadius: 10,
+        borderRadius: 5,
       }}
     >
+      <Typography>Policy Calculator</Typography>
       <form
         className="policy-calculator-form"
         onSubmit={handleSubmit}
@@ -75,12 +90,14 @@ export const PolicyCalculator = () => {
             type="date"
             name="DOB"
             variant="outlined"
+            value={details.DOB}
+            inputProps={{ "data-testid": "dob" }}
           />
           <FormControl sx={{ flex: 1 }}>
             <InputLabel id="gender">Gender</InputLabel>
             <Select
+              SelectDisplayProps={{ "data-testid": "gender" }}
               labelId="gender"
-              // value={gender}
               name="gender"
               onChange={handleChange}
             >
@@ -92,22 +109,26 @@ export const PolicyCalculator = () => {
 
         <TextField
           type="number"
+          inputProps={{ "data-testid": "sumAssured" }}
           name="sumAssured"
           label="Sum Assured"
           variant="outlined"
+          value={details.sumAssured}
         />
 
         <TextField
           type="number"
+          inputProps={{ "data-testid": "modelPremium" }}
           name="modelPremium"
           label="Model Premium"
           variant="outlined"
+          value={details.modelPremium}
         />
         <FormControl>
           <InputLabel id="premium-frequency">Premium Frequency</InputLabel>
           <Select
+            SelectDisplayProps={{ "data-testid": "premiumFrequency" }}
             labelId="premium-frequency"
-            // value={age}
             name="premiumFrequency"
             onChange={handleChange}
           >
@@ -120,22 +141,31 @@ export const PolicyCalculator = () => {
           <TextField
             sx={{ flex: 1 }}
             type="number"
+            inputProps={{ "data-testid": "PT" }}
             name="PT"
             label="PT"
             variant="outlined"
+            value={details.PT}
           />
           <TextField
             sx={{ flex: 1 }}
             type="number"
+            inputProps={{ "data-testid": "PPT" }}
             name="PPT"
             label="PPT"
             variant="outlined"
+            value={details.PPT}
           />
         </Box>
+        <Typography sx={{ color: "red" }}>{validate.PPT}</Typography>
+        <Typography sx={{ color: "red" }}>{validate.PT}</Typography>
 
         <Button type="submit" variant="contained">
           Check
         </Button>
+        <Typography sx={{ color: "red" }} data-testid="success-msg">
+          {successMgs}
+        </Typography>
       </form>
     </Box>
   );

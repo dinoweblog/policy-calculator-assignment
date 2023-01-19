@@ -20,7 +20,7 @@ const register = async (req, res) => {
 
     const token = newToken(user);
 
-    return res.status(201).send({ user, token });
+    return res.send({ user, token });
   } catch (err) {
     return res.status(500).send({ message: err.message });
   }
@@ -44,7 +44,7 @@ const login = async (req, res) => {
 
     const token = newToken(user);
 
-    return res.status(201).send({ user, token });
+    return res.send({ user, token });
   } catch (err) {
     return res.status(500).send({ message: err.message });
   }
